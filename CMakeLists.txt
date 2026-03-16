@@ -16,6 +16,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(raylib)
 
 # add executable
-add_executable(gravity-basins main.cpp)
+add_executable(gravity-basins main.cpp
+        src/simulation.cpp
+        src/simulation.h
+        src/rendering.cpp
+        src/rendering.h
+        src/body.cpp
+        src/body.h)
 target_link_libraries(gravity-basins PRIVATE raylib)
 
