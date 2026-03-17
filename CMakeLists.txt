@@ -32,9 +32,7 @@ add_executable(gravity-basins src/main.cpp
         src/input/appstate.cpp
         src/input/appstate.h
         src/input/shapebuilder.cpp
-        src/input/shapebuilder.h
-        src/rendering/world_camera.cpp
-        src/rendering/world_camera.h)
+        src/input/shapebuilder.h)
 
 target_link_libraries(gravity-basins PRIVATE raylib)
 

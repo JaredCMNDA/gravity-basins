@@ -35,8 +35,8 @@ Vector2 WorldCamera::world_to_screen(Vector2 worldPos) {
     float sCy = screenHeight / 2.0f;
 
     Vector2 result = {
-        sCx + rx / 2.0f,
-        sCy + ry / 2.0f
+        sCx + rx,
+        sCy + ry
     };
 
     return result;

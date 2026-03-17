@@ -28,7 +28,7 @@ int main() {
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
-    InitWindow(minScreenWidth, minScreenHeight, "gravity basins");
+    InitWindow(minScreenWidth, minScreenHeight, "Orbital Mechanics");
 
     SetWindowMinSize(minScreenWidth, minScreenHeight);
 
@@ -57,12 +57,12 @@ int main() {
         /* --- DRAW --- */
         /*
          * Anything being drawn that uses screen space coordinates that have not been translated to world space will stay static
-         * For example the text below
+         * For example the text below ClearBlackground
          */
-        DrawTextEx(font, "", { 25, 25 }, 20, 1, WHITE);
 
         BeginDrawing();
         ClearBackground(BLACK);
+        DrawTextEx(font, "n-body Gravitational Simulation", { 25, 25 }, 20, 1, WHITE);
 
         Vector2 worldPos = { 100, 100 };
         Vector2 screenPos = camera.world_to_screen(worldPos);
