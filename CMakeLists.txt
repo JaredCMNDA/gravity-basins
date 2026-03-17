@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(gravity-basins)
+project(orbital-mechanics)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,7 +16,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(raylib)
 
 # add executable
-add_executable(gravity-basins src/main.cpp
+add_executable(orbital-mechanics src/main.cpp
         src/core/shape.cpp
         src/core/shape.h
         src/core/body.cpp
@@ -32,5 +32,5 @@ add_executable(gravity-basins src/main.cpp
         src/input/shapebuilder.cpp
         src/input/shapebuilder.h)
 
-target_link_libraries(gravity-basins PRIVATE raylib)
+target_link_libraries(orbital-mechanics PRIVATE raylib)
 

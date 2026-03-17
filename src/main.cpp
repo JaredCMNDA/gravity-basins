@@ -7,6 +7,8 @@
 
 #include "raymath.h"
 
+#include "core/shape.h"
+
 
 int main() {
 
@@ -14,14 +16,6 @@ int main() {
 
     const int minScreenWidth = 800;
     const int minScreenHeight = 600;
-
-    /* Objects */
-
-    Camera2D camera = { 0 };
-    camera.target = {0.0f, 0.0f};
-    camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
 
     /* ---- */
 
@@ -35,6 +29,13 @@ int main() {
 
     Font font = LoadFont("../assets/fonts/Akkurat Pro-Mono.otf");
 
+    /* Objects */
+
+    Camera2D camera = { 0 };
+    camera.target = {0.0f, 0.0f};
+    camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
 
     while (!WindowShouldClose()) {
 
@@ -85,6 +86,24 @@ int main() {
         Vector2 worldPos2 = { 130.0f, 130.0f };
         DrawCircleV(worldPos1, 10.0f, RED);
         DrawRectangleV(worldPos2, { 30.0f, 20.0f }, BLUE);
+
+        // test shape class
+        Shape shape;
+        Shape::Point p1 = { 0.0f, 0.0f, nullptr };
+        Shape::Point p2 = { 0.0f, 50.0f, nullptr };
+        Shape::Point p3 = { 50.0f, 50.0f, nullptr };
+        Shape::Point p4 = { 50.0f, 0.0f, nullptr };
+        Shape::Point p5 = { 50.0f, -50.0f, nullptr };
+        Shape::Point p6 = {-20.0f, -25.0f, nullptr };
+        p1.next = &p2;
+        p2.next = &p3;
+        p3.next = &p4;
+        p4.next = &p5;
+        p5.next = &p6;
+        p6.next = &p1; // Loop back to the first point to create a closed shape
+        shape.create_shape(&p1);
+        shape.color = GREEN;
+        shape.draw_shape();
 
         EndMode2D();
 
