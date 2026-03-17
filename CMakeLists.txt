@@ -27,8 +27,6 @@ add_executable(gravity-basins src/main.cpp
         src/physics/collisiondetector.h
         src/physics/collisionresolver.cpp
         src/physics/collisionresolver.h
-        src/rendering/world_camera.cpp
-        src/rendering/world_camera.h
         src/input/appstate.cpp
         src/input/appstate.h
         src/input/shapebuilder.cpp

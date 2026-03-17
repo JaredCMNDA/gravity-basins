@@ -5,9 +5,7 @@
 #include "raylib.h"
 #include <iostream>
 
-// gravity-basins
-#include "./rendering/world_camera.h"
-
+#include "raymath.h"
 
 
 int main() {
@@ -19,10 +17,11 @@ int main() {
 
     /* Objects */
 
-    WorldCamera camera;
-    camera.set_position({0,0});
-    camera.set_zoom(1.0f);
-    camera.set_rotation(0.0f);
+    Camera2D camera = { 0 };
+    camera.target = {0.0f, 0.0f};
+    camera.offset = {GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
 
     /* ---- */
 
@@ -45,28 +44,56 @@ int main() {
         // Panning via click-drag
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             Vector2 mouseDelta = GetMouseDelta();
-            Vector2 camPos = camera.get_position();
-            // Divide by zoom so panning is consistent at any zoom
-            camPos.x -= mouseDelta.x / camera.get_zoom();
-            camPos.y -= mouseDelta.y / camera.get_zoom();
-            camera.set_position(camPos);
+            // Scale the mouse delta by the inverse of the zoom to ensure consistent panning speed regardless of zoom level
+            mouseDelta = Vector2Scale(mouseDelta, -1.0f / camera.zoom);
+            // Rotate delta by camera rotation so dragging direction is consistent with camera orientation
+            mouseDelta = Vector2Rotate(mouseDelta, -camera.rotation * DEG2RAD);
+            camera.target = Vector2Add(camera.target, mouseDelta);
         }
 
+        // Zoom +-0.1 via I and O keys
+        if (IsKeyPressed(KEY_I)){
+            camera.zoom += 0.1f;
+        }
 
+        if (IsKeyPressed(KEY_O)){
+            camera.zoom -= 0.1f;
+            if (camera.zoom < 0.1f) {
+                camera.zoom = 0.1f; // Prevent zooming out too much
+            }
+        }
+
+        // Rotate +-5 degrees via J and L keys
+        if (IsKeyPressed(KEY_J)) {
+            camera.rotation -= 5.0f;
+        }
+
+        if (IsKeyPressed(KEY_L)) {
+            camera.rotation += 5.0f;
+        }
 
         /* --- DRAW --- */
-        /*
-         * Anything being drawn that uses screen space coordinates that have not been translated to world space will stay static
-         * For example the text below ClearBlackground
-         */
 
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTextEx(font, "n-body Gravitational Simulation", { 25, 25 }, 20, 1, WHITE);
 
-        Vector2 worldPos = { 100, 100 };
-        Vector2 screenPos = camera.world_to_screen(worldPos);
-        DrawCircle((int)screenPos.x, (int)screenPos.y, 10 * camera.get_zoom(), RED);
+        /* --- DRAW IN WORLD SPACE --- */
+        BeginMode2D(camera);
+
+        // Test shapes and positions. Normally move these out of the while loop but this is a starting point
+        Vector2 worldPos1 = { 100.0f, 100.0f };
+        Vector2 worldPos2 = { 130.0f, 130.0f };
+        DrawCircleV(worldPos1, 10.0f, RED);
+        DrawRectangleV(worldPos2, { 30.0f, 20.0f }, BLUE);
+
+        EndMode2D();
+
+        /* --- DRAW IN SCREEN SPACE --- */
+        DrawTextEx(font, "n-body Gravitational Simulation", { 25, 25 }, 20, 1, WHITE);
+        DrawTextEx(font, "Camera: ", { 25, 50 }, 20, 1, WHITE);
+        DrawTextEx(font, TextFormat("Zoom: %.2f", camera.zoom), { 25, 75 }, 20, 1, WHITE);
+        DrawTextEx(font, TextFormat("Rotation: %.2f", camera.rotation), { 25, 100 }, 20, 1, WHITE);
+        DrawTextEx(font, TextFormat("Target: (%.2f, %.2f)", camera.target.x, camera.target.y), { 25, 125 }, 20, 1, WHITE);
 
         EndDrawing();
     }
