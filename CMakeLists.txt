@@ -27,10 +27,12 @@ add_executable(orbital-mechanics src/main.cpp
         src/physics/collisiondetector.h
         src/physics/collisionresolver.cpp
         src/physics/collisionresolver.h
-        src/input/appstate.cpp
-        src/input/appstate.h
-        src/input/shapebuilder.cpp
-        src/input/shapebuilder.h)
+        src/input/app_state.cpp
+        src/input/app_state.h
+        src/input/draw_state.cpp
+        src/input/draw_state.h
+        src/input/simulation_state.cpp
+        src/input/simulation_state.h)
 
 target_link_libraries(orbital-mechanics PRIVATE raylib)
 

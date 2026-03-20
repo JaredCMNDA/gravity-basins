@@ -4,10 +4,12 @@
 
 #include "raylib.h"
 #include <iostream>
+#include <vector>
 
 #include "raymath.h"
-
 #include "core/shape.h"
+#include "input/draw_state.h"
+#include "input/simulation_state.h"
 
 
 int main() {
@@ -16,6 +18,7 @@ int main() {
 
     const int minScreenWidth = 800;
     const int minScreenHeight = 600;
+    std::vector<Shape> shapes; // List of shapes in the current state
 
     /* ---- */
 
@@ -37,41 +40,32 @@ int main() {
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
+    /* --- States --- */
+
+    SimulationState simulationState(&camera, &shapes);
+    DrawState drawState(&camera, &shapes);
+
+    simulationState.drawState = &drawState;
+    drawState.simulationState = &simulationState;
+
+    AppState* currentState = &simulationState; // Start in simulation state
+
     while (!WindowShouldClose()) {
 
+        /* --- INPUT --- */
+
+        currentState->handle_input();
+
+        if (currentState->nextState) {
+            currentState->onExit();
+            currentState = currentState->nextState;
+            currentState->nextState = nullptr;
+            currentState->onEnter();
+        }
 
         /* --- UPDATE --- */
 
-        // Panning via click-drag
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            Vector2 mouseDelta = GetMouseDelta();
-            // Scale the mouse delta by the inverse of the zoom to ensure consistent panning speed regardless of zoom level
-            mouseDelta = Vector2Scale(mouseDelta, -1.0f / camera.zoom);
-            // Rotate delta by camera rotation so dragging direction is consistent with camera orientation
-            mouseDelta = Vector2Rotate(mouseDelta, -camera.rotation * DEG2RAD);
-            camera.target = Vector2Add(camera.target, mouseDelta);
-        }
-
-        // Zoom +-0.1 via I and O keys
-        if (IsKeyPressed(KEY_I)){
-            camera.zoom += 0.1f;
-        }
-
-        if (IsKeyPressed(KEY_O)){
-            camera.zoom -= 0.1f;
-            if (camera.zoom < 0.1f) {
-                camera.zoom = 0.1f; // Prevent zooming out too much
-            }
-        }
-
-        // Rotate +-5 degrees via J and L keys
-        if (IsKeyPressed(KEY_J)) {
-            camera.rotation -= 5.0f;
-        }
-
-        if (IsKeyPressed(KEY_L)) {
-            camera.rotation += 5.0f;
-        }
+        currentState->update();
 
         /* --- DRAW --- */
 
@@ -79,40 +73,21 @@ int main() {
         ClearBackground(BLACK);
 
         /* --- DRAW IN WORLD SPACE --- */
+
         BeginMode2D(camera);
 
-        // Test shapes and positions. Normally move these out of the while loop but this is a starting point
-        Vector2 worldPos1 = { 100.0f, 100.0f };
-        Vector2 worldPos2 = { 130.0f, 130.0f };
-        DrawCircleV(worldPos1, 10.0f, RED);
-        DrawRectangleV(worldPos2, { 30.0f, 20.0f }, BLUE);
-
-        // test shape class
-        Shape shape;
-        Shape::Point p1 = { 0.0f, 0.0f, nullptr };
-        Shape::Point p2 = { 0.0f, 50.0f, nullptr };
-        Shape::Point p3 = { 50.0f, 50.0f, nullptr };
-        Shape::Point p4 = { 50.0f, 0.0f, nullptr };
-        Shape::Point p5 = { 50.0f, -50.0f, nullptr };
-        Shape::Point p6 = {-20.0f, -25.0f, nullptr };
-        p1.next = &p2;
-        p2.next = &p3;
-        p3.next = &p4;
-        p4.next = &p5;
-        p5.next = &p6;
-        p6.next = &p1; // Loop back to the first point to create a closed shape
-        shape.create_shape(&p1);
-        shape.color = GREEN;
-        shape.draw_shape();
+        currentState->draw();
 
         EndMode2D();
 
         /* --- DRAW IN SCREEN SPACE --- */
+
         DrawTextEx(font, "n-body Gravitational Simulation", { 25, 25 }, 20, 1, WHITE);
         DrawTextEx(font, "Camera: ", { 25, 50 }, 20, 1, WHITE);
         DrawTextEx(font, TextFormat("Zoom: %.2f", camera.zoom), { 25, 75 }, 20, 1, WHITE);
         DrawTextEx(font, TextFormat("Rotation: %.2f", camera.rotation), { 25, 100 }, 20, 1, WHITE);
         DrawTextEx(font, TextFormat("Target: (%.2f, %.2f)", camera.target.x, camera.target.y), { 25, 125 }, 20, 1, WHITE);
+        DrawTextEx(font, TextFormat("State: %s", currentState == &simulationState ? "Simulation" : "Drawing"), { 25, 150 }, 20, 1, YELLOW);
 
         EndDrawing();
     }

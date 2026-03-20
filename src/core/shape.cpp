@@ -5,6 +5,7 @@
 #include "shape.h"
 
 void Shape::create_shape(Point *centerPoint) {
+    // Handle point list and count
     this->centerPoint = centerPoint;
     this->position = {centerPoint->x, centerPoint->y};
     Point* currentPoint = this->centerPoint;
