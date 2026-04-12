@@ -42,6 +42,32 @@ int main() {
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
+    bool testShapes = true; // Set to true to add some example shapes for testing
+    // Example shapes for testing
+    // Make a diamond shape below the triangle shape we define below
+    if (testShapes) {
+        std::vector<Vector2> vertices1;
+        vertices1.push_back({0.0f, 100.0f});
+        vertices1.push_back({-25.0f, 0.0f});
+        vertices1.push_back({0.0f, -100.0f});
+        vertices1.push_back({25.0f, 0.0f});
+        Polygon diamond({0.0f, 0.0f}, vertices1, RED);
+        shapes.push_back(std::make_unique<Polygon>(diamond));
+
+        // Make a circle shape
+        Circle circle({ -200.0f, -200.0f }, 50.0f, BLUE);
+        shapes.push_back(std::make_unique<Circle>(circle));
+
+        // Make a triangle shape at the center of the screen
+        std::vector<Vector2> vertices2;
+        vertices2.push_back({0.0f, 50.0f});
+        vertices2.push_back({-50.0f, 0.0f});
+        vertices2.push_back({50.0f, 0.0f});
+
+        Polygon triangle({ 0, -83.33f }, vertices2, GREEN);
+        shapes.push_back(std::make_unique<Polygon>(triangle));
+    }
+
     /* --- States --- */
 
     AppContext appContext = { &camera, &shapes, &font };

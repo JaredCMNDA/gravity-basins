@@ -17,6 +17,9 @@ public:
 
     DrawState(AppContext context);
 
+private:
+    static constexpr float CLOSE_SNAP_RADIUS = 20.0f;
+    std::vector<Vector2> newShapePoints;
 };
 
 

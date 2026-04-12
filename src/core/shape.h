@@ -17,6 +17,7 @@ public:
     Color color;
 
     virtual void draw() = 0;
+    static Vector2 calculate_centroid(std::vector<Vector2> vertices);
 
     // constructor
     Shape(Vector2 position, Color color)
